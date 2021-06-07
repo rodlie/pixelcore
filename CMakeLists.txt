@@ -1,3 +1,25 @@
+#
+# PixelCore
+#
+# https://pixelcore.org
+# https://github.com/rodlie/pixelcore
+#
+# Copyright (c) 2021 Ole-André Rodlie. All rights reserved.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+
 cmake_minimum_required(VERSION 3.5)
 
 project(pixelcore LANGUAGES CXX)
@@ -17,28 +39,27 @@ else()
     add_definitions(-DQT_MESSAGELOGCONTEXT)
 endif()
 
-find_package(Qt5 5.12 REQUIRED Core Gui)
+find_package(Qt5 5.12 REQUIRED Core Gui Widgets Concurrent)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(LCMS2 REQUIRED lcms2)
 
 include_directories(
-    libs
-    app
+    src
     ${LCMS2_INCLUDE_DIRS}
 )
 
 set(PIXELCORE_HEADERS
-    libs/pixelcorecms.h
-    libs/pixelcoreimage.h
+    src/pixelcorecms.h
+    src/pixelcoreimage.h
 )
 
 set(PIXELCORE_LIBS
-    libs/pixelcorecms.cpp
-    libs/pixelcoreimage.cpp
+    src/pixelcorecms.cpp
+    src/pixelcoreimage.cpp
 )
 
 set(PIXELCORE_APP
-    app/main.cpp
+    src/main.cpp
 )
 
 add_executable(${PROJECT_NAME}
@@ -50,5 +71,7 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     Qt5::Core
     Qt5::Gui
+    Qt5::Widgets
+    Qt5::Concurrent
     ${LCMS2_LIBRARIES}
 )
