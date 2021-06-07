@@ -29,10 +29,12 @@ include_directories(
 
 set(PIXELCORE_HEADERS
     libs/pixelcorecms.h
+    libs/pixelcoreimage.h
 )
 
 set(PIXELCORE_LIBS
     libs/pixelcorecms.cpp
+    libs/pixelcoreimage.cpp
 )
 
 set(PIXELCORE_APP
