@@ -24,7 +24,38 @@
 
 #include "pixelcorecms.h"
 
+#include <QtGlobal>
+
 PixelCoreCMS::PixelCoreCMS(QObject *parent) : QObject(parent)
 {
 
+}
+
+cmsUInt32Number PixelCoreCMS::toLcmsFormat(QImage::Format format)
+{
+    switch (format) {
+    case QImage::Format_ARGB32:
+    case QImage::Format_RGB32:
+        return TYPE_BGRA_8;
+    case QImage::Format_RGB888:
+        return TYPE_RGB_8;
+    case QImage::Format_RGBX8888:
+    case QImage::Format_RGBA8888:
+        return TYPE_RGBA_8;
+    case QImage::Format_Grayscale8:
+        return TYPE_GRAY_8;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
+    case QImage::Format_Grayscale16:
+        return TYPE_GRAY_16;
+#endif
+    case QImage::Format_RGBA64:
+    case QImage::Format_RGBX64:
+        return TYPE_RGBA_16;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    case QImage::Format_BGR888:
+        return TYPE_BGR_8;
+#endif
+    default:
+        return 0;
+    }
 }

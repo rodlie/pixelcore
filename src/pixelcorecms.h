@@ -26,15 +26,16 @@
 #define PIXELCORECMS_H
 
 #include <QObject>
+#include <QImage>
+
+#include <lcms2.h>
 
 class PixelCoreCMS : public QObject
 {
     Q_OBJECT
 public:
     explicit PixelCoreCMS(QObject *parent = nullptr);
-
-signals:
-
+    static cmsUInt32Number toLcmsFormat(QImage::Format format);
 };
 
 #endif // PIXELCORECMS_H
