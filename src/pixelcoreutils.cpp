@@ -22,23 +22,9 @@
 #
 */
 
-#include <QCoreApplication>
-#include <QStringList>
-#include <QDebug>
+#include "pixelcoreutils.h"
 
-#include <iostream>
-
-int main(int argc, char *argv[])
+PixelCoreUtils::PixelCoreUtils(QObject *parent) : QObject(parent)
 {
-    QCoreApplication a(argc, argv);
-    QCoreApplication::setApplicationName(QString("PixelCore"));
-    QCoreApplication::setOrganizationName(QString("PixelCore"));
-    QCoreApplication::setOrganizationDomain(QString("pixelcore.org"));
-    QCoreApplication::setApplicationVersion(QString(PIXELCORE_VERSION));
 
-    QStringList args = QCoreApplication::arguments();
-
-    std::cout << QString("PixelCore v%1 @ https://pixelcore.org").arg(PIXELCORE_VERSION).toStdString() << std::endl;
-
-    return 0; //a.exec();
 }

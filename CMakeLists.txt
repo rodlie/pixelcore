@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-project(pixelcore LANGUAGES CXX)
+project(pixelcore VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -39,7 +39,9 @@ else()
     add_definitions(-DQT_MESSAGELOGCONTEXT)
 endif()
 
-find_package(Qt5 5.12 REQUIRED Core Gui Widgets Concurrent)
+add_definitions(-DPIXELCORE_VERSION="${PROJECT_VERSION}")
+
+find_package(Qt5 5.12 REQUIRED Core Gui Widgets Concurrent Test)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(LCMS2 REQUIRED lcms2)
 
@@ -51,11 +53,13 @@ include_directories(
 set(PIXELCORE_HEADERS
     src/pixelcorecms.h
     src/pixelcoreimage.h
+    src/pixelcoreutils.h
 )
 
 set(PIXELCORE_LIBS
     src/pixelcorecms.cpp
     src/pixelcoreimage.cpp
+    src/pixelcoreutils.cpp
 )
 
 set(PIXELCORE_APP
