@@ -46,24 +46,24 @@ find_package(PkgConfig REQUIRED)
 pkg_search_module(LCMS2 REQUIRED lcms2)
 
 include_directories(
-    src
+    core
     ${LCMS2_INCLUDE_DIRS}
 )
 
 set(PIXELCORE_HEADERS
-    src/pixelcorecms.h
-    src/pixelcoreimage.h
-    src/pixelcoreutils.h
+    core/pixelcorecms.h
+    core/pixelcoreimage.h
+    core/pixelcoreutils.h
 )
 
 set(PIXELCORE_LIBS
-    src/pixelcorecms.cpp
-    src/pixelcoreimage.cpp
-    src/pixelcoreutils.cpp
+    core/pixelcorecms.cpp
+    core/pixelcoreimage.cpp
+    core/pixelcoreutils.cpp
 )
 
 set(PIXELCORE_APP
-    src/main.cpp
+    core/main.cpp
 )
 
 add_executable(${PROJECT_NAME}
