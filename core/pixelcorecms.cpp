@@ -59,3 +59,32 @@ cmsUInt32Number PixelCoreCMS::toLcmsFormat(QImage::Format format)
         return 0;
     }
 }
+
+QImage PixelCoreCMS::colorManageImage(QImage &image,
+                                      QVector<cmsHPROFILE> profiles,
+                                      int intent,
+                                      cmsUInt32Number flags)
+{
+    if (image.isNull()) { return QImage(); }
+    cmsUInt32Number format = toLcmsFormat(image.format());
+    if (format == 0) { return QImage(); }
+    QImage result(image.width(), image.height(), image.format());
+    cmsHTRANSFORM xform = cmsCreateMultiprofileTransform(profiles.data(),
+                                                         profiles.size(),
+                                                         format,
+                                                         format,
+                                                         intent,
+                                                         flags);
+    if (xform == nullptr) { return QImage(); }
+    cmsDoTransformLineStride(xform,
+                             image.constBits(),
+                             result.bits(),
+                             image.width(),
+                             image.height(),
+                             image.bytesPerLine(),
+                             result.bytesPerLine(),
+                             0,
+                             0);
+    cmsDeleteTransform(xform);
+    return result;
+}

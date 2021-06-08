@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include <QImage>
+#include <QVector>
 
 #include <lcms2.h>
 
@@ -36,6 +37,10 @@ class PixelCoreCMS : public QObject
 public:
     explicit PixelCoreCMS(QObject *parent = nullptr);
     static cmsUInt32Number toLcmsFormat(QImage::Format format);
+    static QImage colorManageImage(QImage &image,
+                                   QVector<cmsHPROFILE> profiles,
+                                   int intent,
+                                   cmsUInt32Number flags);
 };
 
 #endif // PIXELCORECMS_H

@@ -41,7 +41,10 @@ endif()
 
 add_definitions(-DPIXELCORE_VERSION="${PROJECT_VERSION}")
 
+# Qt 5.12 is minimum for now, we will soon require 5.15
 find_package(Qt5 5.12 REQUIRED Core Gui Widgets Concurrent Test)
+
+# use pkg-config to find LCMS (I'm lazy)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(LCMS2 REQUIRED lcms2)
 
@@ -50,32 +53,32 @@ include_directories(
     ${LCMS2_INCLUDE_DIRS}
 )
 
-set(PIXELCORE_HEADERS
+set(PIXELCORE_HEADERS_CORE
     core/pixelcorecms.h
     core/pixelcoreimage.h
     core/pixelcoreutils.h
 )
 
-set(PIXELCORE_LIBS
+set(PIXELCORE_SOURCES_CORE
     core/pixelcorecms.cpp
     core/pixelcoreimage.cpp
     core/pixelcoreutils.cpp
 )
 
-set(PIXELCORE_APP
+set(PIXELCORE_APP_CORE
     core/main.cpp
 )
 
 add_executable(${PROJECT_NAME}
-    ${PIXELCORE_APP}
-    ${PIXELCORE_LIBS}
-    ${PIXELCORE_HEADERS}
+    ${PIXELCORE_APP_CORE}
+    ${PIXELCORE_SOURCES_CORE}
+    ${PIXELCORE_HEADERS_CORE}
 )
 
 target_link_libraries(${PROJECT_NAME}
     Qt5::Core
     Qt5::Gui
-    Qt5::Widgets
-    Qt5::Concurrent
+    #Qt5::Widgets
+    #Qt5::Concurrent
     ${LCMS2_LIBRARIES}
 )
