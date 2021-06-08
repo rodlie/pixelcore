@@ -25,6 +25,8 @@
 #include "pixelcorecms.h"
 
 #include <QtGlobal>
+#include <QDir>
+#include <QCoreApplication>
 
 PixelCoreCMS::PixelCoreCMS(QObject *parent) : QObject(parent)
 {
@@ -61,7 +63,7 @@ cmsUInt32Number PixelCoreCMS::toLcmsFormat(QImage::Format format)
 }
 
 QImage PixelCoreCMS::colorManageImage(QImage &image,
-                                      QVector<cmsHPROFILE> profiles,
+                                      std::vector<cmsHPROFILE> profiles,
                                       int intent,
                                       cmsUInt32Number flags)
 {
@@ -86,5 +88,37 @@ QImage PixelCoreCMS::colorManageImage(QImage &image,
                              0,
                              0);
     cmsDeleteTransform(xform);
+    return result;
+}
+
+QStringList PixelCoreCMS::getColorProfilesPath()
+{
+    QStringList folders;
+    folders <<  QString("%1/WINDOWS/System32/spool/drivers/color").arg(QDir::rootPath());
+    folders << "/Library/ColorSync/Profiles";
+    folders << QString("%1/Library/ColorSync/Profiles").arg(QDir::homePath());
+    folders << "/usr/share/color/icc";
+    folders << "/usr/local/share/color/icc";
+    folders << QString("%1/.color/icc").arg(QDir::homePath());
+    folders << QString("%1/profiles").arg(qApp->applicationDirPath());
+    folders << QString("%1/../Resources/Profiles").arg(qApp->applicationDirPath());
+    folders << QString("%1/../share/pixelcore/profiles").arg(qApp->applicationDirPath());
+    return folders;
+}
+
+cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(std::vector<unsigned char> &buffer)
+{
+    return getProfileColorSpace(cmsOpenProfileFromMem(buffer.data(),
+                                                      static_cast<cmsUInt32Number>(buffer.size())));
+}
+cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(QString &filename)
+{
+    return getProfileColorSpace(cmsOpenProfileFromFile(filename.toStdString().c_str(), "r"));
+}
+
+cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(cmsHPROFILE profile)
+{
+    cmsColorSpaceSignature result = cmsGetColorSpace(profile);
+    cmsCloseProfile(profile);
     return result;
 }

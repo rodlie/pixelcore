@@ -27,8 +27,10 @@
 
 #include <QObject>
 #include <QImage>
-#include <QVector>
+#include <QStringList>
+#include <QByteArray>
 
+#include <vector>
 #include <lcms2.h>
 
 class PixelCoreCMS : public QObject
@@ -38,9 +40,13 @@ public:
     explicit PixelCoreCMS(QObject *parent = nullptr);
     static cmsUInt32Number toLcmsFormat(QImage::Format format);
     static QImage colorManageImage(QImage &image,
-                                   QVector<cmsHPROFILE> profiles,
+                                   std::vector<cmsHPROFILE> profiles,
                                    int intent,
                                    cmsUInt32Number flags);
+    static QStringList getColorProfilesPath();
+    static cmsColorSpaceSignature getProfileColorSpace(std::vector<unsigned char> &buffer);
+    static cmsColorSpaceSignature getProfileColorSpace(QString &filename);
+    static cmsColorSpaceSignature getProfileColorSpace(cmsHPROFILE profile);
 };
 
 #endif // PIXELCORECMS_H
