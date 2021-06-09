@@ -12,6 +12,7 @@ jobs:
         wget https://github.com/rodlie/pixelcore/releases/download/continuous/qt515-focal.tar.xz
         sudo tar xf qt515-focal.tar.xz -C /opt/
     - name: Build QtOIIO (Qt 5.12)
+      run: |
         cd $GITHUB_WORKSPACE
         git clone https://github.com/rodlie/QtOIIO
         cd QtOIIO
@@ -20,6 +21,7 @@ jobs:
         make
         sudo make install
     - name: Build QtOIIO (Qt 5.15)
+      run: |
         cd $GITHUB_WORKSPACE/QtOIIO
         mkdir build15 && cd build15
         cmake -DDEPTHMAP=false -DCMAKE_PREFIX_PATH=/opt/qt515 -DCMAKE_INSTALL_PREFIX=/opt/qt515/plugins ..
