@@ -6,11 +6,25 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
-      run: sudo apt-get install cmake qt5-default qtbase5-dev qt5-image-formats-plugins liblcms2-dev wget tree
+      run: sudo apt-get install cmake qt5-default qtbase5-dev qt5-image-formats-plugins libopenimageio-dev liblcms2-dev wget tree
     - name: Install qtbase/qtimageformats 5.15
       run: |
         wget https://github.com/rodlie/pixelcore/releases/download/continuous/qt515-focal.tar.xz
         sudo tar xf qt515-focal.tar.xz -C /opt/
+    - name: Build QtOIIO (Qt 5.12)
+        cd $GITHUB_WORKSPACE
+        git clone https://github.com/rodlie/QtOIIO
+        cd QtOIIO
+        mkdir build12 && cd build12
+        cmake -DDEPTHMAP=false -DCMAKE_INSTALL_PREFIX=/lib/x86_64-linux-gnu/qt5/plugins ..
+        make
+        sudo make install
+    - name: Build QtOIIO (Qt 5.15)
+        cd $GITHUB_WORKSPACE/QtOIIO
+        mkdir build15 && cd build15
+        cmake -DDEPTHMAP=false -DCMAKE_PREFIX_PATH=/opt/qt515 -DCMAKE_INSTALL_PREFIX=/opt/qt515/plugins ..
+        make
+        sudo make install
     - name: Build pixelcore (Qt 5.12)
       run: |
         cd $GITHUB_WORKSPACE
