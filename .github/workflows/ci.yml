@@ -1,22 +1,29 @@
 name: C/C++ CI
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
+on: [push, pull_request]
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-    - name: apt install
-      run: sudo apt-get install cmake qt5-default qtbase5-dev liblcms2-dev
-    - name: build
+    - name: Install dependencies
+      run: sudo apt-get install cmake qt5-default qtbase5-dev liblcms2-dev wget tree
+    - name: Install qtbase/qtimageformats 5.15
       run: |
-        mkdir build && cd build
+        wget https://github.com/rodlie/pixelcore/releases/download/continuous/qt515-focal.tar.xz
+        sudo tar xf qt515-focal.tar.xz -C /opt/
+    - name: Build pixelcore (Qt 5.12)
+      run: |
+        cd $GITHUB_WORKSPACE
+        mkdir build12 && cd build12
         cmake ..
         make
+        tree
+        ldd pixelcore
+    - name: Build pixelcore (Qt 5.15)
+      run: |
+        cd $GITHUB_WORKSPACE
+        mkdir build15 && cd build15
+        cmake -DCMAKE_PREFIX_PATH=/opt/qt515 ..
+        make
+        tree
+        ldd pixelcore
