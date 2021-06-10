@@ -22,27 +22,9 @@
 #
 */
 
-#include <QApplication>
-#include <QStringList>
-#include <QDebug>
-
-#include <iostream>
-
 #include "pixelcorewindow.h"
 
-int main(int argc, char *argv[])
+PixelCoreWindow::PixelCoreWindow(QWidget *parent) : QMainWindow(parent)
 {
-    std::cout << QString("PixelCore v%1 @ https://pixelcore.org").arg(PIXELCORE_VERSION).toStdString() << std::endl;
-    QApplication a(argc, argv);
-    QCoreApplication::setApplicationName(QString("PixelCore"));
-    QCoreApplication::setOrganizationName(QString("PixelCore"));
-    QCoreApplication::setOrganizationDomain(QString("pixelcore.org"));
-    QCoreApplication::setApplicationVersion(QString(PIXELCORE_VERSION));
 
-    QStringList args = a.arguments();
-
-    PixelCoreWindow w;
-    w.show();
-
-    return a.exec();
 }

@@ -26,7 +26,6 @@ project(pixelcore VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -41,28 +40,41 @@ endif()
 
 add_definitions(-DPIXELCORE_VERSION="${PROJECT_VERSION}")
 
-# Qt 5.12 is minimum for now, we will soon require 5.15
+# OpenMP
+#find_package(OpenMP REQUIRED)
+
+# Qt
 find_package(Qt5 5.12 REQUIRED Core Gui Widgets Concurrent Test)
 
-# use pkg-config to find LCMS (I'm lazy)
+# pkg-config
 find_package(PkgConfig REQUIRED)
+
+# LCMS
 pkg_search_module(LCMS2 REQUIRED lcms2)
+link_directories(${LCMS2_LIBDIR})
+
+# OpenImageIO
+pkg_search_module(OIIO REQUIRED OpenImageIO)
+link_directories(${OIIO_LIBDIR})
 
 include_directories(
     core
     ${LCMS2_INCLUDE_DIRS}
+    ${OIIO_INCLUDE_DIRS}
 )
 
 set(PIXELCORE_HEADERS_CORE
     core/pixelcorecms.h
     core/pixelcoreimage.h
     core/pixelcoreutils.h
+    core/pixelcorewindow.h
 )
 
 set(PIXELCORE_SOURCES_CORE
     core/pixelcorecms.cpp
     core/pixelcoreimage.cpp
     core/pixelcoreutils.cpp
+    core/pixelcorewindow.cpp
 )
 
 set(PIXELCORE_APP_CORE
@@ -78,7 +90,9 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     Qt5::Core
     Qt5::Gui
-    #Qt5::Widgets
-    #Qt5::Concurrent
+    Qt5::Widgets
+    Qt5::Concurrent
     ${LCMS2_LIBRARIES}
+    ${OIIO_LIBRARIES}
+#    OpenMP::OpenMP_CXX
 )

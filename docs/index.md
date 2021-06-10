@@ -1,1 +1,1 @@
-# pixelcore
+*Yet Another Crappy Image Editor...*
