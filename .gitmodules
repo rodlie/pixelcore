@@ -1,0 +1,3 @@
+[submodule "widgets/color"]
+	path = widgets/color
+	url = https://github.com/rodlie/Qt-Color-Widgets
