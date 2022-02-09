@@ -36,17 +36,30 @@
 class PixelCoreCMS : public QObject
 {
     Q_OBJECT
+
 public:
+
     explicit PixelCoreCMS(QObject *parent = nullptr);
+
     static cmsUInt32Number toLcmsFormat(QImage::Format format);
-    static QImage colorManageImage(QImage &image,
-                                   std::vector<cmsHPROFILE> profiles,
-                                   int intent,
-                                   cmsUInt32Number flags);
+
+    static QImage colorManageRGB(QImage &image,
+                                 std::vector<cmsHPROFILE> profiles,
+                                 int intent,
+                                 cmsUInt32Number flags);
+
     static QStringList getColorProfilesPath();
-    static cmsColorSpaceSignature getProfileColorSpace(std::vector<unsigned char> &buffer);
-    static cmsColorSpaceSignature getProfileColorSpace(QString &filename);
+
     static cmsColorSpaceSignature getProfileColorSpace(cmsHPROFILE profile);
+    static cmsColorSpaceSignature getProfileColorSpace(QString &filename);
+    static cmsColorSpaceSignature getProfileColorSpace(std::vector<unsigned char> &buffer);
+
+    static const QString getProfileTag(cmsHPROFILE profile,
+                                       cmsInfoType tag = cmsInfoDescription);
+    static const QString getProfileTag(QString &filename,
+                                       cmsInfoType tag = cmsInfoDescription);
+    static const QString getProfileTag(std::vector<unsigned char> &buffer,
+                                       cmsInfoType tag = cmsInfoDescription);
 };
 
 #endif // PIXELCORECMS_H

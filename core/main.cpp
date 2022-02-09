@@ -32,7 +32,7 @@
 
 int main(int argc, char *argv[])
 {
-    std::cout << QString("PixelCore v%1 @ https://pixelcore.org").arg(PIXELCORE_VERSION).toStdString() << std::endl;
+    std::cout << QString("PixelCore %1 @ https://pixelcore.org").arg(PIXELCORE_VERSION).toStdString() << std::endl;
     QApplication a(argc, argv);
     QCoreApplication::setApplicationName(QString("PixelCore"));
     QCoreApplication::setOrganizationName(QString("PixelCore"));

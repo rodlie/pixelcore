@@ -28,7 +28,8 @@
 #include <QDir>
 #include <QCoreApplication>
 
-PixelCoreCMS::PixelCoreCMS(QObject *parent) : QObject(parent)
+PixelCoreCMS::PixelCoreCMS(QObject *parent)
+    : QObject(parent)
 {
 
 }
@@ -62,10 +63,10 @@ cmsUInt32Number PixelCoreCMS::toLcmsFormat(QImage::Format format)
     }
 }
 
-QImage PixelCoreCMS::colorManageImage(QImage &image,
-                                      std::vector<cmsHPROFILE> profiles,
-                                      int intent,
-                                      cmsUInt32Number flags)
+QImage PixelCoreCMS::colorManageRGB(QImage &image,
+                                    std::vector<cmsHPROFILE> profiles,
+                                    int intent,
+                                    cmsUInt32Number flags)
 {
     if (image.isNull()) { return QImage(); }
     cmsUInt32Number format = toLcmsFormat(image.format());
@@ -100,20 +101,11 @@ QStringList PixelCoreCMS::getColorProfilesPath()
     folders << "/usr/share/color/icc";
     folders << "/usr/local/share/color/icc";
     folders << QString("%1/.color/icc").arg(QDir::homePath());
+    folders << QString("%1/../share/color/icc").arg(qApp->applicationDirPath());
     folders << QString("%1/profiles").arg(qApp->applicationDirPath());
     folders << QString("%1/../Resources/Profiles").arg(qApp->applicationDirPath());
     folders << QString("%1/../share/pixelcore/profiles").arg(qApp->applicationDirPath());
     return folders;
-}
-
-cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(std::vector<unsigned char> &buffer)
-{
-    return getProfileColorSpace(cmsOpenProfileFromMem(buffer.data(),
-                                                      static_cast<cmsUInt32Number>(buffer.size())));
-}
-cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(QString &filename)
-{
-    return getProfileColorSpace(cmsOpenProfileFromFile(filename.toStdString().c_str(), "r"));
 }
 
 cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(cmsHPROFILE profile)
@@ -122,3 +114,57 @@ cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(cmsHPROFILE profile)
     cmsCloseProfile(profile);
     return result;
 }
+
+cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(QString &filename)
+{
+    return getProfileColorSpace(cmsOpenProfileFromFile(filename.toStdString().c_str(), "r"));
+}
+
+cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(std::vector<unsigned char> &buffer)
+{
+    return getProfileColorSpace(cmsOpenProfileFromMem(buffer.data(),
+                                                      static_cast<cmsUInt32Number>(buffer.size())));
+}
+
+const QString PixelCoreCMS::getProfileTag(cmsHPROFILE profile,
+                                          cmsInfoType tag)
+{
+    std::string result;
+    if (profile) {
+        cmsUInt32Number size = 0;
+        size = cmsGetProfileInfoASCII(profile,
+                                      tag,
+                                      "en",
+                                      "US",
+                                      nullptr,
+                                      0);
+        if (size > 0) {
+            std::vector<char> buffer(size);
+            cmsUInt32Number newsize = cmsGetProfileInfoASCII(profile,
+                                                             tag,
+                                                             "en",
+                                                             "US",
+                                                             &buffer[0], size);
+            if (size == newsize) { result = buffer.data(); }
+        }
+    }
+    cmsCloseProfile(profile);
+    return QString::fromStdString(result);
+}
+
+const QString PixelCoreCMS::getProfileTag(QString &filename, cmsInfoType tag)
+{
+    if (QFile::exists(filename)) {
+        return getProfileTag(cmsOpenProfileFromFile(filename.toStdString().c_str(), "r"), tag);
+    }
+    return QString();
+}
+
+const QString PixelCoreCMS::getProfileTag(std::vector<unsigned char> &buffer,
+                                          cmsInfoType tag)
+{
+    return getProfileTag(cmsOpenProfileFromMem(buffer.data(),
+                                               static_cast<cmsUInt32Number>(buffer.size())),
+                         tag);
+}
+

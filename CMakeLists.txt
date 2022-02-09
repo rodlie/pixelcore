@@ -40,9 +40,6 @@ endif()
 
 add_definitions(-DPIXELCORE_VERSION="${PROJECT_VERSION}")
 
-# OpenMP
-#find_package(OpenMP REQUIRED)
-
 # Qt
 find_package(Qt5 5.12 REQUIRED Core Gui Widgets Concurrent Test)
 
@@ -94,5 +91,4 @@ target_link_libraries(${PROJECT_NAME}
     Qt5::Concurrent
     ${LCMS2_LIBRARIES}
     ${OIIO_LIBRARIES}
-#    OpenMP::OpenMP_CXX
 )
