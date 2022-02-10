@@ -4,7 +4,7 @@
 # https://pixelcore.org
 # https://github.com/rodlie/pixelcore
 #
-# Copyright (c) 2021 Ole-André Rodlie. All rights reserved.
+# Copyright (c) 2021, 2022 Ole-André Rodlie. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@ include_directories(
 
 set(PIXELCORE_HEADERS_CORE
     core/pixelcorecms.h
+    core/pixelcoreconsole.h
     core/pixelcoreimage.h
     core/pixelcoreutils.h
     core/pixelcorewindow.h
@@ -69,6 +70,7 @@ set(PIXELCORE_HEADERS_CORE
 
 set(PIXELCORE_SOURCES_CORE
     core/pixelcorecms.cpp
+    core/pixelcoreconsole.cpp
     core/pixelcoreimage.cpp
     core/pixelcoreutils.cpp
     core/pixelcorewindow.cpp

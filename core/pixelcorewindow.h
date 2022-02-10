@@ -5,7 +5,7 @@
 # https://pixelcore.org
 # https://github.com/rodlie/pixelcore
 #
-# Copyright (c) 2021 Ole-André Rodlie. All rights reserved.
+# Copyright (c) 2021, 2022 Ole-André Rodlie. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,15 +26,20 @@
 #define PIXELCOREWINDOW_H
 
 #include <QMainWindow>
+#include <QStringList>
 
 class PixelCoreWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit PixelCoreWindow(QWidget *parent = nullptr);
+    explicit PixelCoreWindow(QWidget *parent = nullptr,
+                             QStringList args = QStringList());
 
 signals:
 
+private:
+
+    QStringList _args;
 };
 
 #endif // PIXELCOREWINDOW_H

@@ -22,32 +22,24 @@
 #
 */
 
-#include <QApplication>
+#ifndef PIXELCORECONSOLE_H
+#define PIXELCORECONSOLE_H
+
+#include <QObject>
 #include <QStringList>
-#include <QDebug>
 
-#include <iostream>
-
-#include "pixelcoreconsole.h"
-#include "pixelcorewindow.h"
-
-int main(int argc, char *argv[])
+class PixelCoreConsole : public QObject
 {
-    std::cout << QString("PixelCore %1 @ https://pixelcore.org").arg(PIXELCORE_VERSION).toStdString() << std::endl;
-    QApplication a(argc, argv);
-    QCoreApplication::setApplicationName(QString("PixelCore"));
-    QCoreApplication::setOrganizationName(QString("PixelCore"));
-    QCoreApplication::setOrganizationDomain(QString("pixelcore.org"));
-    QCoreApplication::setApplicationVersion(QString(PIXELCORE_VERSION));
+    Q_OBJECT
 
-    QStringList args = a.arguments();
+public:
 
-    if (!args.contains("-cmd")) {
-        PixelCoreWindow w(nullptr, args);
-        w.show();
-        return a.exec();
-    }
+    explicit PixelCoreConsole(QObject *parent = nullptr,
+                              QStringList args = QStringList());
 
-    PixelCoreConsole c(nullptr, args);
-    return 0;
-}
+private:
+
+    QStringList _args;
+};
+
+#endif // PIXELCORECONSOLE_H
