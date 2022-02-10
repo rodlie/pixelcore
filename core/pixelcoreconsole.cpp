@@ -34,18 +34,21 @@ PixelCoreConsole::PixelCoreConsole(QObject *parent,
     : QObject(parent)
     , _args(args)
 {
+    if (args.contains("--help") || args.contains("-h")) {
+        showHelp();
+        return;
+    }
+
     bool unknownArgs = true;
 
-    if (args.contains("--icc")) { unknownArgs = showProfiles(); }
+    if (args.contains("--icc") && args.contains("show")) { unknownArgs = showProfiles(); }
 
-    if (args.contains("--help") || args.contains("-h") || unknownArgs) {
-        showHelp();
-    }
+    if (unknownArgs) { showHelp(); }
 }
 
 bool PixelCoreConsole::showProfiles()
 {
-    if (_args.contains("--icc")) {
+    if (_args.contains("--icc") && _args.contains("show")) {
         QMap<QString, QString> profiles;
         if (_args.contains("rgb")) {
             profiles = PixelCoreCMS::getColorProfiles();
@@ -78,6 +81,6 @@ void PixelCoreConsole::showHelp()
     std::cout << "-h, --help                     Display this help and exit" << std::endl;
     std::cout << "-v, --version                  Output version information and exit" << std::endl;
     std::cout << std::endl;
-    std::cout << "--icc [rgb/cmyk/gray]          List available ICC color profiles and exit" << std::endl;
+    std::cout << "--icc show [rgb/cmyk/gray]     Output available ICC color profiles and exit" << std::endl;
     std::cout << std::endl;
 }
