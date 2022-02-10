@@ -29,6 +29,7 @@
 #include <QImage>
 #include <QStringList>
 #include <QByteArray>
+#include <QMap>
 
 #include <vector>
 #include <lcms2.h>
@@ -49,6 +50,8 @@ public:
                                  cmsUInt32Number flags);
 
     static QStringList getColorProfilesPath();
+    static QMap<QString, QString> getColorProfiles(cmsColorSpaceSignature colorspace = cmsSigRgbData);
+    static QMap<QString, QString> getAllColorProfiles();
 
     static cmsColorSpaceSignature getProfileColorSpace(cmsHPROFILE profile);
     static cmsColorSpaceSignature getProfileColorSpace(QString &filename);

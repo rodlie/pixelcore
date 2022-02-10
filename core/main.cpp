@@ -25,9 +25,11 @@
 #include <QApplication>
 #include <QStringList>
 #include <QDebug>
+#include <QMapIterator>
 
 #include <iostream>
 
+#include "pixelcorecms.h"
 #include "pixelcorewindow.h"
 
 int main(int argc, char *argv[])
@@ -40,6 +42,13 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(QString(PIXELCORE_VERSION));
 
     QStringList args = a.arguments();
+    qDebug() << args;
+
+    QMapIterator<QString, QString> profiles(PixelCoreCMS::getAllColorProfiles());
+    while (profiles.hasNext()) {
+        profiles.next();
+        qDebug() << profiles.key() << profiles.value();
+    }
 
     PixelCoreWindow w;
     w.show();

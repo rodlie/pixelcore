@@ -25,8 +25,11 @@
 #include "pixelcorecms.h"
 
 #include <QtGlobal>
-#include <QDir>
 #include <QCoreApplication>
+
+#include <QDir>
+#include <QDirIterator>
+#include <QMapIterator>
 
 PixelCoreCMS::PixelCoreCMS(QObject *parent)
     : QObject(parent)
@@ -106,6 +109,53 @@ QStringList PixelCoreCMS::getColorProfilesPath()
     folders << QString("%1/../Resources/Profiles").arg(qApp->applicationDirPath());
     folders << QString("%1/../share/pixelcore/profiles").arg(qApp->applicationDirPath());
     return folders;
+}
+
+QMap<QString, QString> PixelCoreCMS::getColorProfiles(cmsColorSpaceSignature colorspace)
+{
+    QMap<QString, QString> profiles;
+    QStringList folders = getColorProfilesPath();
+
+    for (int i = 0; i < folders.size(); ++i) {
+        QDirIterator it(folders.at(i),
+                        QStringList() << "*.icc" << "*.icm",
+                        QDir::Files,
+                        QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString iccFile = it.next();
+            QString profile = getProfileTag(iccFile);
+            if (iccFile.isEmpty() || profile.isEmpty()) { continue; }
+            if (getProfileColorSpace(iccFile) != colorspace) { continue; }
+            profiles[profile] = iccFile;
+        }
+    }
+
+    return profiles;
+}
+
+QMap<QString, QString> PixelCoreCMS::getAllColorProfiles()
+{
+    QMap<QString, QString> profiles;
+
+    QMapIterator<QString, QString> rgb(getColorProfiles());
+    while (rgb.hasNext()) {
+        rgb.next();
+        profiles[rgb.key()] = rgb.value();
+    }
+
+    QMapIterator<QString, QString> cmyk(getColorProfiles(cmsSigCmykData));
+    while (cmyk.hasNext()) {
+        cmyk.next();
+        profiles[cmyk.key()] = cmyk.value();
+    }
+
+    QMapIterator<QString, QString> gray(getColorProfiles(cmsSigGrayData));
+    while (gray.hasNext()) {
+        gray.next();
+        profiles[gray.key()] = gray.value();
+    }
+
+    return profiles;
 }
 
 cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(cmsHPROFILE profile)
