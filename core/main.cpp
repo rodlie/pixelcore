@@ -28,7 +28,6 @@
 
 #include <iostream>
 
-#include "pixelcorecms.h"
 #include "pixelcoreconsole.h"
 #include "pixelcorewindow.h"
 
@@ -43,14 +42,17 @@ int main(int argc, char *argv[])
 
     QStringList args = a.arguments();
 
-#ifdef PIXELCORE_DEBUG
-    qDebug() << "arguments" << args;
-    qDebug() << "RGB profiles" << PixelCoreCMS::getColorProfiles().size();
-    qDebug() << "CMYK profiles" << PixelCoreCMS::getColorProfiles(cmsSigCmykData).size();
-    qDebug() << "GRAY profiles" << PixelCoreCMS::getColorProfiles(cmsSigGrayData).size();
-#endif
+    if (args.contains("-v") || args.contains("--version")) {
+        return 0;
+    }
 
-    if (!args.contains("-cmd")) {
+    bool gui = (!args.contains("--cmd") &&
+                !args.contains("-c") &&
+                !args.contains("--help") &&
+                !args.contains("-h") &&
+                !args.contains("--icc"));
+
+    if (gui) {
         PixelCoreWindow w(nullptr, args);
         w.show();
         return a.exec();

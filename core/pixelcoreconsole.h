@@ -40,6 +40,9 @@ public:
 private:
 
     QStringList _args;
+
+    bool showProfiles();
+    void showHelp();
 };
 
 #endif // PIXELCORECONSOLE_H
