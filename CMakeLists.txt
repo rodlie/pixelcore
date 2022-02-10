@@ -35,7 +35,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if (CMAKE_BUILD_TYPE MATCHES "^(release|Release|RELEASE)$")
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
 else()
-    add_definitions(-DQT_MESSAGELOGCONTEXT)
+    add_definitions(-DQT_MESSAGELOGCONTEXT -DPIXELCORE_DEBUG)
 endif()
 
 add_definitions(-DPIXELCORE_VERSION="${PROJECT_VERSION}")

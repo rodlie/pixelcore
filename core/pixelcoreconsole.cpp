@@ -24,12 +24,10 @@
 
 #include "pixelcoreconsole.h"
 
-#include <QDebug>
-
 PixelCoreConsole::PixelCoreConsole(QObject *parent,
                                    QStringList args)
     : QObject(parent)
     , _args(args)
 {
-    qDebug() << "args" << _args;
+
 }
