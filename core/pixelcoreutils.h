@@ -26,15 +26,21 @@
 #define PIXELCOREUTILS_H
 
 #include <QObject>
+#include <QString>
 
 class PixelCoreUtils : public QObject
 {
     Q_OBJECT
+
 public:
+
     explicit PixelCoreUtils(QObject *parent = nullptr);
 
-signals:
+    static unsigned int readUInt32Number(char *p);
 
+    static bool fileHasColorProfile(QString &filename);
+    static bool extractEmbeddedColorProfile(QString &filename,
+                                            QString icc = QString());
 };
 
 #endif // PIXELCOREUTILS_H

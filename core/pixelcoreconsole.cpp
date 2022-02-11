@@ -24,8 +24,11 @@
 
 #include "pixelcoreconsole.h"
 #include "pixelcorecms.h"
+#include "pixelcoreutils.h"
 
 #include <QMapIterator>
+#include <QFile>
+#include <QDebug>
 
 #include <iostream>
 
@@ -42,6 +45,7 @@ PixelCoreConsole::PixelCoreConsole(QObject *parent,
     bool unknownArgs = true;
 
     if (args.contains("--icc") && args.contains("show")) { unknownArgs = showProfiles(); }
+    else if (args.contains("--icc") && args.contains("check")) { unknownArgs = checkImageProfile(); }
 
     if (unknownArgs) { showHelp(); }
 }
@@ -74,13 +78,25 @@ bool PixelCoreConsole::showProfiles()
     return false;
 }
 
+bool PixelCoreConsole::checkImageProfile()
+{
+    QString filename = _args.at(_args.count()-1);
+    if (_args.contains("--icc") && _args.contains("check") && QFile::exists(filename)) {
+        if (PixelCoreUtils::fileHasColorProfile(filename)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void PixelCoreConsole::showHelp()
 {
     std::cout << std::endl << "Usage" << std::endl << std::endl;
-    std::cout << "-c, --cmd                      Enable console mode" << std::endl;
-    std::cout << "-h, --help                     Display this help and exit" << std::endl;
-    std::cout << "-v, --version                  Output version information and exit" << std::endl;
+    //std::cout << "-c, --cmd                      Enable console mode" << std::endl;
+    std::cout << "-h, --help                     Display this help" << std::endl;
+    std::cout << "-v, --version                  Output version information" << std::endl;
     std::cout << std::endl;
-    std::cout << "--icc show [rgb/cmyk/gray]     Output available ICC color profiles and exit" << std::endl;
+    std::cout << "--icc show [rgb/cmyk/gray]     List available ICC color profiles" << std::endl;
+    std::cout << "--icc check [file]             Check if file has an embedded ICC color profile" << std::endl;
     std::cout << std::endl;
 }

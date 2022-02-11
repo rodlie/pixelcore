@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    bool gui = (!args.contains("--cmd") &&
+    // enable gui in the future, for now console-only
+    /*bool gui = (!args.contains("--cmd") &&
                 !args.contains("-c") &&
                 !args.contains("--help") &&
                 !args.contains("-h") &&
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
         PixelCoreWindow w(nullptr, args);
         w.show();
         return a.exec();
-    }
+    }*/
 
     PixelCoreConsole c(nullptr, args);
     return 0;

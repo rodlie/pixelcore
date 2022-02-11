@@ -42,6 +42,7 @@ private:
     QStringList _args;
 
     bool showProfiles();
+    bool checkImageProfile();
     void showHelp();
 };
 

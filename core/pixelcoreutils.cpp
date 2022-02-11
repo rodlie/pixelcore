@@ -24,8 +24,98 @@
 
 #include "pixelcoreutils.h"
 
+#include <QFile>
+
+#include <iostream>
+#include <fstream>
+
+#define ICC_HEADER_LENGTH 128
+
+#ifndef ORD8
+#define ORD8 unsigned char
+#endif
+
 PixelCoreUtils::PixelCoreUtils(QObject *parent)
     : QObject(parent)
 {
 
+}
+
+unsigned int PixelCoreUtils::readUInt32Number(char *p) {
+    unsigned int rv;
+    rv = 16777216 * (unsigned int)((ORD8 *)p)[0]
+            +    65536 * (unsigned int)((ORD8 *)p)[1]
+            +      256 * (unsigned int)((ORD8 *)p)[2]
+            +            (unsigned int)((ORD8 *)p)[3];
+    return rv;
+}
+
+bool PixelCoreUtils::fileHasColorProfile(QString &filename)
+{
+    if (QFile::exists(filename)) {
+        return extractEmbeddedColorProfile(filename);
+    }
+    return false;
+}
+
+bool PixelCoreUtils::extractEmbeddedColorProfile(QString &filename,
+                                                 QString icc)
+{
+    std::ifstream file(filename.toStdString().c_str(),
+                       std::ios::in|std::ios::binary|std::ios::ate);
+    if (!file.is_open()) { return false; }
+    unsigned int profileSize = 0;
+    int profileOffset = 0;
+    int offset = 0;
+    int found;
+    do {
+        found = 0;
+        int fc = 0;
+        char c;
+        file.seekg(offset, std::ios::beg);
+        if (file.tellg() != offset) { break; }
+        while(found == 0) {
+            if (!file.read(&c,1)) { break; }
+            offset++;
+            switch(fc) {
+            case 0:
+                if (c == 'a') { fc++; } else { fc = 0; }
+                break;
+            case 1:
+                if (c == 'c') { fc++; } else { fc = 0; }
+                break;
+            case 2:
+                if (c == 's') { fc++; } else { fc = 0; }
+                break;
+            case 3:
+                if (c == 'p') {
+                    found = 1;
+                    offset -= 40;
+                } else { fc = 0; }
+                break;
+            }
+        }
+        if (found) {
+            profileOffset = offset;
+            file.seekg(offset, std::ios::beg);
+            char *sizeBuffer = new char[4];
+            if (file.read(sizeBuffer, 4)) {
+                profileSize = readUInt32Number(sizeBuffer);
+                std::cout << "found an ICC profile at offset " << offset << ", size is " << profileSize << std::endl;
+            } else {
+                std::cout << "found an ICC profile header, but unable to get the profile size." << std::endl;
+            }
+            delete[] sizeBuffer;
+            offset += ICC_HEADER_LENGTH;
+        }
+    } while (found != 0);
+
+    if (profileOffset > 0 && profileSize > ICC_HEADER_LENGTH) {
+        if (icc.isEmpty()) { return true; }
+        else {
+            // save
+        }
+    }
+
+    return false;
 }
