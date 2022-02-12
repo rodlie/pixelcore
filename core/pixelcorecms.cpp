@@ -137,7 +137,7 @@ QMap<QString, QString> PixelCoreCMS::getAllColorProfiles()
 {
     QMap<QString, QString> profiles;
 
-    QMapIterator<QString, QString> rgb(getColorProfiles());
+    QMapIterator<QString, QString> rgb(getColorProfiles(cmsSigRgbData));
     while (rgb.hasNext()) {
         rgb.next();
         profiles[rgb.key()] = rgb.value();
@@ -202,10 +202,12 @@ const QString PixelCoreCMS::getProfileTag(cmsHPROFILE profile,
     return QString::fromStdString(result);
 }
 
-const QString PixelCoreCMS::getProfileTag(QString &filename, cmsInfoType tag)
+const QString PixelCoreCMS::getProfileTag(QString &filename,
+                                          cmsInfoType tag)
 {
     if (QFile::exists(filename)) {
-        return getProfileTag(cmsOpenProfileFromFile(filename.toStdString().c_str(), "r"), tag);
+        return getProfileTag(cmsOpenProfileFromFile(filename.toStdString().c_str(), "r"),
+                             tag);
     }
     return QString();
 }

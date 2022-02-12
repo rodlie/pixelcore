@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QByteArray>
 
 class PixelCoreUtils : public QObject
 {
@@ -39,8 +40,8 @@ public:
     static unsigned int readUInt32Number(char *p);
 
     static bool fileHasColorProfile(QString &filename);
-    static bool extractEmbeddedColorProfile(QString &filename,
-                                            QString icc = QString());
+
+    static QByteArray getEmbeddedColorProfile(QString &filename);
 };
 
 #endif // PIXELCOREUTILS_H

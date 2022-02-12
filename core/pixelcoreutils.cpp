@@ -25,6 +25,7 @@
 #include "pixelcoreutils.h"
 
 #include <QFile>
+#include <QDebug>
 
 #include <iostream>
 #include <fstream>
@@ -53,17 +54,18 @@ unsigned int PixelCoreUtils::readUInt32Number(char *p) {
 bool PixelCoreUtils::fileHasColorProfile(QString &filename)
 {
     if (QFile::exists(filename)) {
-        return extractEmbeddedColorProfile(filename);
+        return (getEmbeddedColorProfile(filename).size() > 0);
     }
     return false;
 }
 
-bool PixelCoreUtils::extractEmbeddedColorProfile(QString &filename,
-                                                 QString icc)
+QByteArray PixelCoreUtils::getEmbeddedColorProfile(QString &filename)
 {
+    // TODO: move std stuff to QFile?
+    QByteArray result;
     std::ifstream file(filename.toStdString().c_str(),
                        std::ios::in|std::ios::binary|std::ios::ate);
-    if (!file.is_open()) { return false; }
+    if (!file.is_open()) { return result; }
     unsigned int profileSize = 0;
     int profileOffset = 0;
     int offset = 0;
@@ -103,7 +105,7 @@ bool PixelCoreUtils::extractEmbeddedColorProfile(QString &filename,
                 profileSize = readUInt32Number(sizeBuffer);
                 std::cout << "found an ICC profile at offset " << offset << ", size is " << profileSize << std::endl;
             } else {
-                std::cout << "found an ICC profile header, but unable to get the profile size." << std::endl;
+                std::cout << "found an ICC profile header, but unable to get the profile size. Broken image/profile?" << std::endl;
             }
             delete[] sizeBuffer;
             offset += ICC_HEADER_LENGTH;
@@ -111,11 +113,15 @@ bool PixelCoreUtils::extractEmbeddedColorProfile(QString &filename,
     } while (found != 0);
 
     if (profileOffset > 0 && profileSize > ICC_HEADER_LENGTH) {
-        if (icc.isEmpty()) { return true; }
-        else {
-            // save
-        }
+            file.clear();
+            file.seekg(profileOffset, std::ios::beg);
+            char *profileBuffer = new char[profileSize];
+            if (file.read(profileBuffer, profileSize)) {
+                result = QByteArray(profileBuffer, profileSize);
+            }
+            delete[] profileBuffer;
     }
 
-    return false;
+    file.close();
+    return result;
 }
