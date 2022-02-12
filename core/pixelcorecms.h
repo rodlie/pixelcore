@@ -54,15 +54,21 @@ public:
     static QMap<QString, QString> getAllColorProfiles();
 
     static cmsColorSpaceSignature getProfileColorSpace(cmsHPROFILE profile);
-    static cmsColorSpaceSignature getProfileColorSpace(QString &filename);
+    static cmsColorSpaceSignature getProfileColorSpace(const QString &filename);
     static cmsColorSpaceSignature getProfileColorSpace(std::vector<unsigned char> &buffer);
+    static cmsColorSpaceSignature getProfileColorSpace(QByteArray buffer);
 
     static const QString getProfileTag(cmsHPROFILE profile,
                                        cmsInfoType tag = cmsInfoDescription);
-    static const QString getProfileTag(QString &filename,
+    static const QString getProfileTag(const QString &filename,
                                        cmsInfoType tag = cmsInfoDescription);
     static const QString getProfileTag(std::vector<unsigned char> &buffer,
                                        cmsInfoType tag = cmsInfoDescription);
+    static const QString getProfileTag(QByteArray buffer,
+                                       cmsInfoType tag = cmsInfoDescription);
+
+    static bool isValidColorProfile(const QString  &filename);
+    static bool isValidColorProfile(QByteArray profile);
 };
 
 #endif // PIXELCORECMS_H

@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QByteArray>
 
 class PixelCoreConsole : public QObject
 {
@@ -43,6 +44,9 @@ private:
 
     bool showProfiles();
     bool checkImageProfile();
+    bool extractEmbeddedProfile();
+    bool saveProfile(const QString &filename,
+                     QByteArray profile);
     void showHelp();
 };
 

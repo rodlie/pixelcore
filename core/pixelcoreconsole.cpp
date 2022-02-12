@@ -42,12 +42,13 @@ PixelCoreConsole::PixelCoreConsole(QObject *parent,
         return;
     }
 
-    bool unknownArgs = true;
+    bool status = true;
 
-    if (args.contains("--icc") && args.contains("show")) { unknownArgs = showProfiles(); }
-    else if (args.contains("--icc") && args.contains("check")) { unknownArgs = checkImageProfile(); }
+    if (args.contains("--icc") && args.contains("show")) { status = showProfiles(); }
+    else if (args.contains("--icc") && args.contains("check")) { status = checkImageProfile(); }
+    else if (args.contains("--icc") && args.contains("extract")) { status = extractEmbeddedProfile(); }
 
-    if (unknownArgs) { showHelp(); }
+    if (status) { showHelp(); }
 }
 
 bool PixelCoreConsole::showProfiles()
@@ -89,14 +90,50 @@ bool PixelCoreConsole::checkImageProfile()
     return true;
 }
 
+bool PixelCoreConsole::extractEmbeddedProfile()
+{
+    if (_args.contains("--icc") &&
+        _args.contains("extract") &&
+        _args.count() == 5)
+    {
+        QString input = _args.at(3);
+        QString output = _args.at(4);
+        if (input.isEmpty() ||
+            output.isEmpty() ||
+            !QFile::exists(input)) { return true; }
+        if (!output.endsWith(".icc")) { output.append(".icc"); }
+        QByteArray profile = PixelCoreUtils::getEmbeddedColorProfile(input);
+        if (!PixelCoreCMS::isValidColorProfile(profile)) { return true; }
+        if (saveProfile(output, profile)) { return false; }
+    }
+    return true;
+}
+
+bool PixelCoreConsole::saveProfile(const QString &filename,
+                                   QByteArray profile)
+{
+    bool saved = false;
+    if (!filename.isEmpty() &&
+        profile.size() > 0 &&
+        PixelCoreCMS::isValidColorProfile(profile))
+    {
+        QFile file(filename);
+        if (file.open(QIODevice::WriteOnly)) {
+            if (file.write(profile) > -1) { saved = true; }
+            file.close();
+        }
+    }
+    return saved;
+}
+
 void PixelCoreConsole::showHelp()
 {
     std::cout << std::endl << "Usage" << std::endl << std::endl;
-    //std::cout << "-c, --cmd                      Enable console mode" << std::endl;
-    std::cout << "-h, --help                     Display this help" << std::endl;
-    std::cout << "-v, --version                  Output version information" << std::endl;
+    std::cout << "-h, --help                         Display this help" << std::endl;
+    std::cout << "-v, --version                      Output version information" << std::endl;
     std::cout << std::endl;
-    std::cout << "--icc show [rgb/cmyk/gray]     List available ICC color profiles" << std::endl;
-    std::cout << "--icc check [file]             Check if file has an embedded ICC color profile" << std::endl;
+    std::cout << "--icc show [rgb/cmyk/gray]         List available ICC color profiles" << std::endl;
+    std::cout << "--icc check [image]                Check if file has an embedded ICC color profile" << std::endl;
+    std::cout << "--icc extract [input] [output]     Extract embedded ICC color profile from image" << std::endl;
     std::cout << std::endl;
 }

@@ -165,12 +165,18 @@ cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(cmsHPROFILE profile)
     return result;
 }
 
-cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(QString &filename)
+cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(const QString &filename)
 {
     return getProfileColorSpace(cmsOpenProfileFromFile(filename.toStdString().c_str(), "r"));
 }
 
 cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(std::vector<unsigned char> &buffer)
+{
+    return getProfileColorSpace(cmsOpenProfileFromMem(buffer.data(),
+                                                      static_cast<cmsUInt32Number>(buffer.size())));
+}
+
+cmsColorSpaceSignature PixelCoreCMS::getProfileColorSpace(QByteArray buffer)
 {
     return getProfileColorSpace(cmsOpenProfileFromMem(buffer.data(),
                                                       static_cast<cmsUInt32Number>(buffer.size())));
@@ -202,7 +208,7 @@ const QString PixelCoreCMS::getProfileTag(cmsHPROFILE profile,
     return QString::fromStdString(result);
 }
 
-const QString PixelCoreCMS::getProfileTag(QString &filename,
+const QString PixelCoreCMS::getProfileTag(const QString &filename,
                                           cmsInfoType tag)
 {
     if (QFile::exists(filename)) {
@@ -218,5 +224,25 @@ const QString PixelCoreCMS::getProfileTag(std::vector<unsigned char> &buffer,
     return getProfileTag(cmsOpenProfileFromMem(buffer.data(),
                                                static_cast<cmsUInt32Number>(buffer.size())),
                          tag);
+}
+
+const QString PixelCoreCMS::getProfileTag(QByteArray buffer,
+                                          cmsInfoType tag)
+{
+    return getProfileTag(cmsOpenProfileFromMem(buffer.data(),
+                                               static_cast<cmsUInt32Number>(buffer.size())),
+                         tag);
+}
+
+bool PixelCoreCMS::isValidColorProfile(const QString &filename)
+{
+    if (QFile::exists(filename) && !getProfileTag(filename).isEmpty()) { return true; }
+    return false;
+}
+
+bool PixelCoreCMS::isValidColorProfile(QByteArray profile)
+{
+    if (profile.size() > 0 && !getProfileTag(profile).isEmpty()) { return true; }
+    return false;
 }
 
