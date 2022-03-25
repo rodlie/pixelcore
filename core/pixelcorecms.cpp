@@ -54,9 +54,11 @@ cmsUInt32Number PixelCoreCMS::toLcmsFormat(QImage::Format format)
     case QImage::Format_Grayscale16:
         return TYPE_GRAY_16;
 #endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     case QImage::Format_RGBA64:
     case QImage::Format_RGBX64:
         return TYPE_RGBA_16;
+#endif
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     case QImage::Format_BGR888:
         return TYPE_BGR_8;
