@@ -31,9 +31,9 @@
 #include <QString>
 #include <QStringList>
 
-#include "pixelcoreconsole.h"
+#include "console.h"
 
-//using namespace PixelCore;
+using namespace PixelCore;
 
 int main(int argc, char *argv[])
 {
@@ -43,6 +43,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain(QString("pixelcore.org"));
     QCoreApplication::setApplicationVersion(QString(PIXELCORE_VERSION));
 
-    PixelCoreConsole console(nullptr, a.arguments());
+    Console console(nullptr, a.arguments());
     return 0;
 }

@@ -27,7 +27,7 @@
 #
 */
 
-#include "pixelcoreconsole.h"
+#include "console.h"
 #include "cms.h"
 
 #include <QMapIterator>
@@ -38,8 +38,8 @@
 
 using namespace PixelCore;
 
-PixelCoreConsole::PixelCoreConsole(QObject *parent,
-                                   QStringList args)
+Console::Console(QObject *parent,
+                 QStringList args)
     : QObject(parent)
     , _args(args)
 {
@@ -57,7 +57,7 @@ PixelCoreConsole::PixelCoreConsole(QObject *parent,
     if (status) { showHelp(); }
 }
 
-bool PixelCoreConsole::showProfiles()
+bool Console::showProfiles()
 {
     if (_args.contains("--icc") && _args.contains("list")) {
         QMap<QString, QString> profiles;
@@ -71,7 +71,6 @@ bool PixelCoreConsole::showProfiles()
             profiles = CMS::getAllColorProfiles();
         }
         if (profiles.size() > 0) {
-            std::cout << std::endl;
             QMapIterator<QString, QString> icc(profiles);
             while (icc.hasNext()) {
                 icc.next();
@@ -85,18 +84,16 @@ bool PixelCoreConsole::showProfiles()
     return false;
 }
 
-bool PixelCoreConsole::checkImageProfile()
+bool Console::checkImageProfile()
 {
     QString filename = _args.at(_args.count()-1);
     if (_args.contains("--icc") && _args.contains("check") && QFile::exists(filename)) {
-        if (CMS::hasColorProfile(filename)) {
-            return false;
-        }
+        if (CMS::hasColorProfile(filename)) { return false; }
     }
     return true;
 }
 
-bool PixelCoreConsole::extractEmbeddedProfile()
+bool Console::extractEmbeddedProfile()
 {
     if (_args.contains("--icc") &&
         _args.contains("extract") &&
@@ -115,7 +112,7 @@ bool PixelCoreConsole::extractEmbeddedProfile()
     return true;
 }
 
-bool PixelCoreConsole::saveProfile(const QString &filename,
+bool Console::saveProfile(const QString &filename,
                                    QByteArray profile)
 {
     bool saved = false;
@@ -132,7 +129,7 @@ bool PixelCoreConsole::saveProfile(const QString &filename,
     return saved;
 }
 
-void PixelCoreConsole::showHelp()
+void Console::showHelp()
 {
     std::cout << QString("PixelCore %1 @ https://pixelcore.org").arg(PIXELCORE_VERSION).toStdString() << std::endl;
     std::cout << std::endl << "Usage" << std::endl << std::endl;

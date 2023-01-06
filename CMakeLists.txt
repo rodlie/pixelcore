@@ -68,12 +68,12 @@ include_directories(
 
 set(PIXELCORE_HEADERS_CORE
     core/cms.h
-    core/pixelcoreconsole.h
+    core/console.h
 )
 
 set(PIXELCORE_SOURCES_CORE
     core/cms.cpp
-    core/pixelcoreconsole.cpp
+    core/console.cpp
 )
 
 set(PIXELCORE_APP_CORE

@@ -27,26 +27,34 @@
 #
 */
 
-#ifndef PIXELCOREUTILS_H
-#define PIXELCOREUTILS_H
+#ifndef PIXELCORE_CONSOLE_H
+#define PIXELCORE_CONSOLE_H
 
 #include <QObject>
-#include <QString>
+#include <QStringList>
 #include <QByteArray>
 
-class PixelCoreUtils : public QObject
-{
-    Q_OBJECT
+namespace PixelCore {
+    class Console : public QObject
+    {
+        Q_OBJECT
 
-public:
+    public:
 
-    explicit PixelCoreUtils(QObject *parent = nullptr);
+        explicit Console(QObject *parent = nullptr,
+                         QStringList args = QStringList());
 
-    static unsigned int readUInt32Number(char *p);
+    private:
 
-    static bool fileHasColorProfile(QString &filename);
+        QStringList _args;
 
-    static QByteArray getEmbeddedColorProfile(QString &filename);
-};
+        bool showProfiles();
+        bool checkImageProfile();
+        bool extractEmbeddedProfile();
+        bool saveProfile(const QString &filename,
+                         QByteArray profile);
+        void showHelp();
+    };
+}
 
-#endif // PIXELCOREUTILS_H
+#endif // PIXELCORE_CONSOLE_H
