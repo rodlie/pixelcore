@@ -50,7 +50,8 @@
 
 using namespace PixelCore;
 
-cmsUInt32Number CMS::toLcmsFormat(QImage::Format format)
+cmsUInt32Number
+CMS::toLcmsFormat(const QImage::Format &format)
 {
     switch (format) {
     case QImage::Format_ARGB32:
@@ -81,7 +82,8 @@ cmsUInt32Number CMS::toLcmsFormat(QImage::Format format)
     }
 }
 
-unsigned int CMS::readUInt32Number(char *p)
+unsigned int
+CMS::readUInt32Number(char *p)
 {
     unsigned int rv;
     rv = 16777216 * (unsigned int)((ORD8 *)p)[0]
@@ -91,10 +93,11 @@ unsigned int CMS::readUInt32Number(char *p)
     return rv;
 }
 
-QImage CMS::colorManageRGB(QImage &image,
-                           std::vector<cmsHPROFILE> profiles,
-                           int intent,
-                           cmsUInt32Number flags)
+const QImage
+CMS::manageImageLCMS(const QImage &image,
+                     std::vector<cmsHPROFILE> &profiles,
+                     int intent,
+                     cmsUInt32Number flags)
 {
     if (image.isNull()) { return QImage(); }
     cmsUInt32Number format = toLcmsFormat(image.format());
@@ -120,7 +123,8 @@ QImage CMS::colorManageRGB(QImage &image,
     return result;
 }
 
-QStringList CMS::getColorProfilesPath()
+const QStringList
+CMS::getColorProfilesPath()
 {
     QStringList folders;
     folders <<  QString("%1/WINDOWS/System32/spool/drivers/color").arg(QDir::rootPath());
@@ -136,7 +140,9 @@ QStringList CMS::getColorProfilesPath()
     return folders;
 }
 
-QMap<QString, QString> CMS::getColorProfiles(cmsColorSpaceSignature colorspace)
+const QMap<QString, QString>
+CMS::getColorProfiles(cmsColorSpaceSignature colorspace,
+                      bool all)
 {
     QMap<QString, QString> profiles;
     QStringList folders = getColorProfilesPath();
@@ -150,7 +156,7 @@ QMap<QString, QString> CMS::getColorProfiles(cmsColorSpaceSignature colorspace)
             QString iccFile = it.next();
             QString profile = getProfileTag(iccFile);
             if (iccFile.isEmpty() || profile.isEmpty()) { continue; }
-            if (getProfileColorSpace(iccFile) != colorspace) { continue; }
+            if (!all && getProfileColorSpace(iccFile) != colorspace) { continue; }
             profiles[profile] = iccFile;
         }
     }
@@ -158,57 +164,43 @@ QMap<QString, QString> CMS::getColorProfiles(cmsColorSpaceSignature colorspace)
     return profiles;
 }
 
-QMap<QString, QString> CMS::getAllColorProfiles()
+const QMap<QString, QString>
+CMS::getAllColorProfiles()
 {
-    QMap<QString, QString> profiles;
-
-    QMapIterator<QString, QString> rgb(getColorProfiles(cmsSigRgbData));
-    while (rgb.hasNext()) {
-        rgb.next();
-        profiles[rgb.key()] = rgb.value();
-    }
-
-    QMapIterator<QString, QString> cmyk(getColorProfiles(cmsSigCmykData));
-    while (cmyk.hasNext()) {
-        cmyk.next();
-        profiles[cmyk.key()] = cmyk.value();
-    }
-
-    QMapIterator<QString, QString> gray(getColorProfiles(cmsSigGrayData));
-    while (gray.hasNext()) {
-        gray.next();
-        profiles[gray.key()] = gray.value();
-    }
-
-    return profiles;
+    return getColorProfiles(cmsSigRgbData, true);
 }
 
-cmsColorSpaceSignature CMS::getProfileColorSpace(cmsHPROFILE profile)
+cmsColorSpaceSignature
+CMS::getProfileColorSpace(cmsHPROFILE profile)
 {
     cmsColorSpaceSignature result = cmsGetColorSpace(profile);
     cmsCloseProfile(profile);
     return result;
 }
 
-cmsColorSpaceSignature CMS::getProfileColorSpace(const QString &filename)
+cmsColorSpaceSignature
+CMS::getProfileColorSpace(const QString &filename)
 {
     return getProfileColorSpace(cmsOpenProfileFromFile(filename.toStdString().c_str(), "r"));
 }
 
-cmsColorSpaceSignature CMS::getProfileColorSpace(std::vector<unsigned char> &buffer)
+cmsColorSpaceSignature
+CMS::getProfileColorSpace(const std::vector<unsigned char> &buffer)
 {
     return getProfileColorSpace(cmsOpenProfileFromMem(buffer.data(),
                                                       static_cast<cmsUInt32Number>(buffer.size())));
 }
 
-cmsColorSpaceSignature CMS::getProfileColorSpace(QByteArray buffer)
+cmsColorSpaceSignature
+CMS::getProfileColorSpace(const QByteArray &buffer)
 {
     return getProfileColorSpace(cmsOpenProfileFromMem(buffer.data(),
                                                       static_cast<cmsUInt32Number>(buffer.size())));
 }
 
-const QString CMS::getProfileTag(cmsHPROFILE profile,
-                                          cmsInfoType tag)
+const QString
+CMS::getProfileTag(cmsHPROFILE profile,
+                   cmsInfoType tag)
 {
     std::string result;
     if (profile) {
@@ -233,8 +225,9 @@ const QString CMS::getProfileTag(cmsHPROFILE profile,
     return QString::fromStdString(result);
 }
 
-const QString CMS::getProfileTag(const QString &filename,
-                                          cmsInfoType tag)
+const QString
+CMS::getProfileTag(const QString &filename,
+                   cmsInfoType tag)
 {
     if (QFile::exists(filename)) {
         return getProfileTag(cmsOpenProfileFromFile(filename.toStdString().c_str(), "r"),
@@ -243,23 +236,26 @@ const QString CMS::getProfileTag(const QString &filename,
     return QString();
 }
 
-const QString CMS::getProfileTag(std::vector<unsigned char> &buffer,
-                                          cmsInfoType tag)
+const QString
+CMS::getProfileTag(const std::vector<unsigned char> &buffer,
+                   cmsInfoType tag)
 {
     return getProfileTag(cmsOpenProfileFromMem(buffer.data(),
                                                static_cast<cmsUInt32Number>(buffer.size())),
                          tag);
 }
 
-const QString CMS::getProfileTag(QByteArray buffer,
-                                          cmsInfoType tag)
+const QString
+CMS::getProfileTag(const QByteArray &buffer,
+                   cmsInfoType tag)
 {
     return getProfileTag(cmsOpenProfileFromMem(buffer.data(),
                                                static_cast<cmsUInt32Number>(buffer.size())),
                          tag);
 }
 
-const QByteArray CMS::getEmbeddedColorProfile(const QString &filename)
+const QByteArray
+CMS::getEmbeddedColorProfile(const QString &filename)
 {
     QByteArray result;
     std::ifstream file(filename.toStdString().c_str(),
@@ -325,7 +321,8 @@ const QByteArray CMS::getEmbeddedColorProfile(const QString &filename)
     return result;
 }
 
-bool CMS::hasColorProfile(const QString &filename)
+bool
+CMS::hasColorProfile(const QString &filename)
 {
     if ( QFile::exists(filename) ) {
         return (getEmbeddedColorProfile(filename).size() > 0);
@@ -333,13 +330,15 @@ bool CMS::hasColorProfile(const QString &filename)
     return false;
 }
 
-bool CMS::isValidColorProfile(const QString &filename)
+bool
+CMS::isValidColorProfile(const QString &filename)
 {
     if (QFile::exists(filename) && !getProfileTag(filename).isEmpty()) { return true; }
     return false;
 }
 
-bool CMS::isValidColorProfile(QByteArray profile)
+bool
+CMS::isValidColorProfile(const QByteArray &profile)
 {
     if (profile.size() > 0 && !getProfileTag(profile).isEmpty()) { return true; }
     return false;

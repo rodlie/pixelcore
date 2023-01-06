@@ -45,36 +45,37 @@ namespace PixelCore {
     {
     public:
 
-        static cmsUInt32Number toLcmsFormat(QImage::Format format);
+        static cmsUInt32Number toLcmsFormat(const QImage::Format &format);
         static unsigned int readUInt32Number(char *p);
 
-        static QImage colorManageRGB(QImage &image,
-                                     std::vector<cmsHPROFILE> profiles,
-                                     int intent,
-                                     cmsUInt32Number flags);
+        static const QImage manageImageLCMS(const QImage &image,
+                                            std::vector<cmsHPROFILE> &profiles,
+                                            int intent,
+                                            cmsUInt32Number flags);
 
-        static QStringList getColorProfilesPath();
-        static QMap<QString, QString> getColorProfiles(cmsColorSpaceSignature colorspace = cmsSigRgbData);
-        static QMap<QString, QString> getAllColorProfiles();
+        static const QStringList getColorProfilesPath();
+        static const QMap<QString, QString> getColorProfiles(cmsColorSpaceSignature colorspace = cmsSigRgbData,
+                                                             bool all = false);
+        static const QMap<QString, QString> getAllColorProfiles();
 
         static cmsColorSpaceSignature getProfileColorSpace(cmsHPROFILE profile);
         static cmsColorSpaceSignature getProfileColorSpace(const QString &filename);
-        static cmsColorSpaceSignature getProfileColorSpace(std::vector<unsigned char> &buffer);
-        static cmsColorSpaceSignature getProfileColorSpace(QByteArray buffer);
+        static cmsColorSpaceSignature getProfileColorSpace(const std::vector<unsigned char> &buffer);
+        static cmsColorSpaceSignature getProfileColorSpace(const QByteArray &buffer);
 
         static const QString getProfileTag(cmsHPROFILE profile,
                                            cmsInfoType tag = cmsInfoDescription);
         static const QString getProfileTag(const QString &filename,
                                            cmsInfoType tag = cmsInfoDescription);
-        static const QString getProfileTag(std::vector<unsigned char> &buffer,
+        static const QString getProfileTag(const std::vector<unsigned char> &buffer,
                                            cmsInfoType tag = cmsInfoDescription);
-        static const QString getProfileTag(QByteArray buffer,
+        static const QString getProfileTag(const QByteArray &buffer,
                                            cmsInfoType tag = cmsInfoDescription);
 
         static const QByteArray getEmbeddedColorProfile(const QString &filename);
         static bool hasColorProfile(const QString &filename);
         static bool isValidColorProfile(const QString  &filename);
-        static bool isValidColorProfile(QByteArray profile);
+        static bool isValidColorProfile(const QByteArray &profile);
     };
 }
 
