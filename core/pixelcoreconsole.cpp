@@ -61,13 +61,13 @@ bool PixelCoreConsole::showProfiles()
     if (_args.contains("--icc") && _args.contains("show")) {
         QMap<QString, QString> profiles;
         if (_args.contains("rgb")) {
-            profiles = PixelCoreCMS::getColorProfiles();
+            profiles = PIXELCORE::CMS::getColorProfiles();
         } else if (_args.contains("cmyk")) {
-            profiles = PixelCoreCMS::getColorProfiles(cmsSigCmykData);
+            profiles = PIXELCORE::CMS::getColorProfiles(cmsSigCmykData);
         } else if (_args.contains("gray")) {
-            profiles = PixelCoreCMS::getColorProfiles(cmsSigGrayData);
+            profiles = PIXELCORE::CMS::getColorProfiles(cmsSigGrayData);
         } else {
-            profiles = PixelCoreCMS::getAllColorProfiles();
+            profiles = PIXELCORE::CMS::getAllColorProfiles();
         }
         if (profiles.size() > 0) {
             std::cout << std::endl;
@@ -108,7 +108,7 @@ bool PixelCoreConsole::extractEmbeddedProfile()
             !QFile::exists(input)) { return true; }
         if (!output.endsWith(".icc")) { output.append(".icc"); }
         QByteArray profile = PixelCoreUtils::getEmbeddedColorProfile(input);
-        if (!PixelCoreCMS::isValidColorProfile(profile)) { return true; }
+        if (!PIXELCORE::CMS::isValidColorProfile(profile)) { return true; }
         if (saveProfile(output, profile)) { return false; }
     }
     return true;
@@ -120,7 +120,7 @@ bool PixelCoreConsole::saveProfile(const QString &filename,
     bool saved = false;
     if (!filename.isEmpty() &&
         profile.size() > 0 &&
-        PixelCoreCMS::isValidColorProfile(profile))
+        PIXELCORE::CMS::isValidColorProfile(profile))
     {
         QFile file(filename);
         if (file.open(QIODevice::WriteOnly)) {

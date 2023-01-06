@@ -37,6 +37,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(PIXELCORE "PixelCore" CACHE STRING "PixelCore namespace")
+
 if (CMAKE_BUILD_TYPE MATCHES "^(release|Release|RELEASE)$")
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
 else()
@@ -46,12 +48,13 @@ endif()
 add_definitions(-DPIXELCORE_VERSION="${PROJECT_VERSION}")
 
 # Qt
-find_package(Qt5 5.12 REQUIRED Core Gui Widgets Concurrent Test)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} 5.12 COMPONENTS Concurrent Widgets REQUIRED)
 
 # pkg-config
 find_package(PkgConfig REQUIRED)
 
-# LCMS
+# Litte CMS
 pkg_search_module(LCMS2 2.13 REQUIRED lcms2)
 link_directories(${LCMS2_LIBDIR})
 
@@ -85,17 +88,17 @@ set(PIXELCORE_APP_CORE
     core/main.cpp
 )
 
-add_executable(${PROJECT_NAME}
+add_executable(
+    ${PROJECT_NAME}
     ${PIXELCORE_APP_CORE}
     ${PIXELCORE_SOURCES_CORE}
     ${PIXELCORE_HEADERS_CORE}
 )
 
-target_link_libraries(${PROJECT_NAME}
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
-    Qt5::Concurrent
+target_link_libraries(
+    ${PROJECT_NAME}
+    Qt${QT_VERSION_MAJOR}::Concurrent
+    Qt${QT_VERSION_MAJOR}::Widgets
     ${LCMS2_LIBRARIES}
     ${OIIO_LIBRARIES}
 )

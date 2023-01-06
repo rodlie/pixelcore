@@ -27,8 +27,8 @@
 #
 */
 
-#ifndef PIXELCORECMS_H
-#define PIXELCORECMS_H
+#ifndef PIXELCORE_CMS_H
+#define PIXELCORE_CMS_H
 
 #include <QObject>
 #include <QImage>
@@ -37,43 +37,47 @@
 #include <QMap>
 
 #include <vector>
+
+#define CMS_NO_REGISTER_KEYWORD
 #include <lcms2.h>
 
-class PixelCoreCMS : public QObject
-{
-    Q_OBJECT
+namespace PIXELCORE {
+    class CMS : public QObject
+    {
+        Q_OBJECT
 
-public:
+    public:
 
-    explicit PixelCoreCMS(QObject *parent = nullptr);
+        explicit CMS(QObject *parent = nullptr);
 
-    static cmsUInt32Number toLcmsFormat(QImage::Format format);
+        static cmsUInt32Number toLcmsFormat(QImage::Format format);
 
-    static QImage colorManageRGB(QImage &image,
-                                 std::vector<cmsHPROFILE> profiles,
-                                 int intent,
-                                 cmsUInt32Number flags);
+        static QImage colorManageRGB(QImage &image,
+                                     std::vector<cmsHPROFILE> profiles,
+                                     int intent,
+                                     cmsUInt32Number flags);
 
-    static QStringList getColorProfilesPath();
-    static QMap<QString, QString> getColorProfiles(cmsColorSpaceSignature colorspace = cmsSigRgbData);
-    static QMap<QString, QString> getAllColorProfiles();
+        static QStringList getColorProfilesPath();
+        static QMap<QString, QString> getColorProfiles(cmsColorSpaceSignature colorspace = cmsSigRgbData);
+        static QMap<QString, QString> getAllColorProfiles();
 
-    static cmsColorSpaceSignature getProfileColorSpace(cmsHPROFILE profile);
-    static cmsColorSpaceSignature getProfileColorSpace(const QString &filename);
-    static cmsColorSpaceSignature getProfileColorSpace(std::vector<unsigned char> &buffer);
-    static cmsColorSpaceSignature getProfileColorSpace(QByteArray buffer);
+        static cmsColorSpaceSignature getProfileColorSpace(cmsHPROFILE profile);
+        static cmsColorSpaceSignature getProfileColorSpace(const QString &filename);
+        static cmsColorSpaceSignature getProfileColorSpace(std::vector<unsigned char> &buffer);
+        static cmsColorSpaceSignature getProfileColorSpace(QByteArray buffer);
 
-    static const QString getProfileTag(cmsHPROFILE profile,
-                                       cmsInfoType tag = cmsInfoDescription);
-    static const QString getProfileTag(const QString &filename,
-                                       cmsInfoType tag = cmsInfoDescription);
-    static const QString getProfileTag(std::vector<unsigned char> &buffer,
-                                       cmsInfoType tag = cmsInfoDescription);
-    static const QString getProfileTag(QByteArray buffer,
-                                       cmsInfoType tag = cmsInfoDescription);
+        static const QString getProfileTag(cmsHPROFILE profile,
+                                           cmsInfoType tag = cmsInfoDescription);
+        static const QString getProfileTag(const QString &filename,
+                                           cmsInfoType tag = cmsInfoDescription);
+        static const QString getProfileTag(std::vector<unsigned char> &buffer,
+                                           cmsInfoType tag = cmsInfoDescription);
+        static const QString getProfileTag(QByteArray buffer,
+                                           cmsInfoType tag = cmsInfoDescription);
 
-    static bool isValidColorProfile(const QString  &filename);
-    static bool isValidColorProfile(QByteArray profile);
-};
+        static bool isValidColorProfile(const QString  &filename);
+        static bool isValidColorProfile(QByteArray profile);
+    };
+}
 
-#endif // PIXELCORECMS_H
+#endif // PIXELCORE_CMS_H
