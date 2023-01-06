@@ -28,42 +28,21 @@
 */
 
 #include <QApplication>
+#include <QString>
 #include <QStringList>
-#include <QDebug>
-
-#include <iostream>
 
 #include "pixelcoreconsole.h"
-#include "pixelcorewindow.h"
+
+//using namespace PixelCore;
 
 int main(int argc, char *argv[])
 {
-    std::cout << QString("PixelCore %1 @ https://pixelcore.org").arg(PIXELCORE_VERSION).toStdString() << std::endl;
     QApplication a(argc, argv);
     QCoreApplication::setApplicationName(QString("PixelCore"));
     QCoreApplication::setOrganizationName(QString("PixelCore"));
     QCoreApplication::setOrganizationDomain(QString("pixelcore.org"));
     QCoreApplication::setApplicationVersion(QString(PIXELCORE_VERSION));
 
-    QStringList args = a.arguments();
-
-    if (args.contains("-v") || args.contains("--version")) {
-        return 0;
-    }
-
-    // enable gui in the future, for now console-only
-    /*bool gui = (!args.contains("--cmd") &&
-                !args.contains("-c") &&
-                !args.contains("--help") &&
-                !args.contains("-h") &&
-                !args.contains("--icc"));
-
-    if (gui) {
-        PixelCoreWindow w(nullptr, args);
-        w.show();
-        return a.exec();
-    }*/
-
-    PixelCoreConsole c(nullptr, args);
+    PixelCoreConsole console(nullptr, a.arguments());
     return 0;
 }

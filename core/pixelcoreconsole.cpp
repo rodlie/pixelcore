@@ -29,7 +29,6 @@
 
 #include "pixelcoreconsole.h"
 #include "cms.h"
-#include "pixelcoreutils.h"
 
 #include <QMapIterator>
 #include <QFile>
@@ -37,7 +36,7 @@
 
 #include <iostream>
 
-using namespace PIXELCORE;
+using namespace PixelCore;
 
 PixelCoreConsole::PixelCoreConsole(QObject *parent,
                                    QStringList args)
@@ -51,7 +50,7 @@ PixelCoreConsole::PixelCoreConsole(QObject *parent,
 
     bool status = true;
 
-    if (args.contains("--icc") && args.contains("show")) { status = showProfiles(); }
+    if (args.contains("--icc") && args.contains("list")) { status = showProfiles(); }
     else if (args.contains("--icc") && args.contains("check")) { status = checkImageProfile(); }
     else if (args.contains("--icc") && args.contains("extract")) { status = extractEmbeddedProfile(); }
 
@@ -60,7 +59,7 @@ PixelCoreConsole::PixelCoreConsole(QObject *parent,
 
 bool PixelCoreConsole::showProfiles()
 {
-    if (_args.contains("--icc") && _args.contains("show")) {
+    if (_args.contains("--icc") && _args.contains("list")) {
         QMap<QString, QString> profiles;
         if (_args.contains("rgb")) {
             profiles = CMS::getColorProfiles();
@@ -90,7 +89,7 @@ bool PixelCoreConsole::checkImageProfile()
 {
     QString filename = _args.at(_args.count()-1);
     if (_args.contains("--icc") && _args.contains("check") && QFile::exists(filename)) {
-        if (PixelCoreUtils::fileHasColorProfile(filename)) {
+        if (CMS::hasColorProfile(filename)) {
             return false;
         }
     }
@@ -109,7 +108,7 @@ bool PixelCoreConsole::extractEmbeddedProfile()
             output.isEmpty() ||
             !QFile::exists(input)) { return true; }
         if (!output.endsWith(".icc")) { output.append(".icc"); }
-        QByteArray profile = PixelCoreUtils::getEmbeddedColorProfile(input);
+        QByteArray profile = CMS::getEmbeddedColorProfile(input);
         if (!CMS::isValidColorProfile(profile)) { return true; }
         if (saveProfile(output, profile)) { return false; }
     }
@@ -135,11 +134,11 @@ bool PixelCoreConsole::saveProfile(const QString &filename,
 
 void PixelCoreConsole::showHelp()
 {
+    std::cout << QString("PixelCore %1 @ https://pixelcore.org").arg(PIXELCORE_VERSION).toStdString() << std::endl;
     std::cout << std::endl << "Usage" << std::endl << std::endl;
     std::cout << "-h, --help                         Display this help" << std::endl;
-    std::cout << "-v, --version                      Output version information" << std::endl;
     std::cout << std::endl;
-    std::cout << "--icc show [rgb/cmyk/gray]         List available ICC color profiles" << std::endl;
+    std::cout << "--icc list [rgb/cmyk/gray]         List available ICC color profiles" << std::endl;
     std::cout << "--icc check [image]                Check if file has an embedded ICC color profile" << std::endl;
     std::cout << "--icc extract [input] [output]     Extract embedded ICC color profile from image" << std::endl;
     std::cout << std::endl;

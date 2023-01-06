@@ -37,8 +37,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(PIXELCORE "PixelCore" CACHE STRING "PixelCore namespace")
-
 if (CMAKE_BUILD_TYPE MATCHES "^(release|Release|RELEASE)$")
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
 else()
@@ -49,7 +47,7 @@ add_definitions(-DPIXELCORE_VERSION="${PROJECT_VERSION}")
 
 # Qt
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} 5.12 COMPONENTS Concurrent Widgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} 5.12 COMPONENTS Gui Widgets Concurrent Test REQUIRED)
 
 # pkg-config
 find_package(PkgConfig REQUIRED)
@@ -71,17 +69,11 @@ include_directories(
 set(PIXELCORE_HEADERS_CORE
     core/cms.h
     core/pixelcoreconsole.h
-    core/pixelcoreimage.h
-    core/pixelcoreutils.h
-    core/pixelcorewindow.h
 )
 
 set(PIXELCORE_SOURCES_CORE
     core/cms.cpp
     core/pixelcoreconsole.cpp
-    core/pixelcoreimage.cpp
-    core/pixelcoreutils.cpp
-    core/pixelcorewindow.cpp
 )
 
 set(PIXELCORE_APP_CORE
@@ -97,7 +89,9 @@ add_executable(
 
 target_link_libraries(
     ${PROJECT_NAME}
-    Qt${QT_VERSION_MAJOR}::Concurrent
+    PRIVATE
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
     ${LCMS2_LIBRARIES}
     ${OIIO_LIBRARIES}

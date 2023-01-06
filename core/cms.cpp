@@ -36,13 +36,19 @@
 #include <QDirIterator>
 #include <QMapIterator>
 
-using namespace PIXELCORE;
+#include <QFile>
+#include <QDebug>
 
-CMS::CMS(QObject *parent)
-    : QObject(parent)
-{
+#include <iostream>
+#include <fstream>
 
-}
+#define ICC_HEADER_LENGTH 128
+
+#ifndef ORD8
+#define ORD8 unsigned char
+#endif
+
+using namespace PixelCore;
 
 cmsUInt32Number CMS::toLcmsFormat(QImage::Format format)
 {
@@ -73,6 +79,16 @@ cmsUInt32Number CMS::toLcmsFormat(QImage::Format format)
     default:
         return 0;
     }
+}
+
+unsigned int CMS::readUInt32Number(char *p)
+{
+    unsigned int rv;
+    rv = 16777216 * (unsigned int)((ORD8 *)p)[0]
+            +    65536 * (unsigned int)((ORD8 *)p)[1]
+            +      256 * (unsigned int)((ORD8 *)p)[2]
+            +            (unsigned int)((ORD8 *)p)[3];
+    return rv;
 }
 
 QImage CMS::colorManageRGB(QImage &image,
@@ -241,6 +257,80 @@ const QString CMS::getProfileTag(QByteArray buffer,
     return getProfileTag(cmsOpenProfileFromMem(buffer.data(),
                                                static_cast<cmsUInt32Number>(buffer.size())),
                          tag);
+}
+
+const QByteArray CMS::getEmbeddedColorProfile(const QString &filename)
+{
+    QByteArray result;
+    std::ifstream file(filename.toStdString().c_str(),
+                       std::ios::in|std::ios::binary|std::ios::ate);
+    if (!file.is_open()) { return result; }
+    unsigned int profileSize = 0;
+    int profileOffset = 0;
+    int offset = 0;
+    int found;
+    do {
+        found = 0;
+        int fc = 0;
+        char c;
+        file.seekg(offset, std::ios::beg);
+        if (file.tellg() != offset) { break; }
+        while(found == 0) {
+            if (!file.read(&c,1)) { break; }
+            offset++;
+            switch(fc) {
+            case 0:
+                if (c == 'a') { fc++; } else { fc = 0; }
+                break;
+            case 1:
+                if (c == 'c') { fc++; } else { fc = 0; }
+                break;
+            case 2:
+                if (c == 's') { fc++; } else { fc = 0; }
+                break;
+            case 3:
+                if (c == 'p') {
+                    found = 1;
+                    offset -= 40;
+                } else { fc = 0; }
+                break;
+            }
+        }
+        if (found) {
+            profileOffset = offset;
+            file.seekg(offset, std::ios::beg);
+            char *sizeBuffer = new char[4];
+            if (file.read(sizeBuffer, 4)) {
+                profileSize = readUInt32Number(sizeBuffer);
+                qDebug() << "found an ICC profile at offset" << offset << profileSize;
+            } else {
+                qDebug() << "found an ICC profile header, but unable to get the profile size. Broken image/profile?";
+            }
+            delete[] sizeBuffer;
+            offset += ICC_HEADER_LENGTH;
+        }
+    } while (found != 0);
+
+    if (profileOffset > 0 && profileSize > ICC_HEADER_LENGTH) {
+            file.clear();
+            file.seekg(profileOffset, std::ios::beg);
+            char *profileBuffer = new char[profileSize];
+            if (file.read(profileBuffer, profileSize)) {
+                result = QByteArray(profileBuffer, profileSize);
+            }
+            delete[] profileBuffer;
+    }
+
+    file.close();
+    return result;
+}
+
+bool CMS::hasColorProfile(const QString &filename)
+{
+    if ( QFile::exists(filename) ) {
+        return (getEmbeddedColorProfile(filename).size() > 0);
+    }
+    return false;
 }
 
 bool CMS::isValidColorProfile(const QString &filename)

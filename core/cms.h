@@ -30,7 +30,6 @@
 #ifndef PIXELCORE_CMS_H
 #define PIXELCORE_CMS_H
 
-#include <QObject>
 #include <QImage>
 #include <QStringList>
 #include <QByteArray>
@@ -41,16 +40,13 @@
 #define CMS_NO_REGISTER_KEYWORD
 #include <lcms2.h>
 
-namespace PIXELCORE {
-    class CMS : public QObject
+namespace PixelCore {
+    class CMS
     {
-        Q_OBJECT
-
     public:
 
-        explicit CMS(QObject *parent = nullptr);
-
         static cmsUInt32Number toLcmsFormat(QImage::Format format);
+        static unsigned int readUInt32Number(char *p);
 
         static QImage colorManageRGB(QImage &image,
                                      std::vector<cmsHPROFILE> profiles,
@@ -75,6 +71,8 @@ namespace PIXELCORE {
         static const QString getProfileTag(QByteArray buffer,
                                            cmsInfoType tag = cmsInfoDescription);
 
+        static const QByteArray getEmbeddedColorProfile(const QString &filename);
+        static bool hasColorProfile(const QString &filename);
         static bool isValidColorProfile(const QString  &filename);
         static bool isValidColorProfile(QByteArray profile);
     };
