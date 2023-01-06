@@ -27,7 +27,7 @@
 #
 */
 
-#include "pixelcorecms.h"
+#include "cms.h"
 
 #include <QtGlobal>
 #include <QCoreApplication>

@@ -28,7 +28,7 @@
 */
 
 #include "pixelcoreconsole.h"
-#include "pixelcorecms.h"
+#include "cms.h"
 #include "pixelcoreutils.h"
 
 #include <QMapIterator>
@@ -36,6 +36,8 @@
 #include <QDebug>
 
 #include <iostream>
+
+using namespace PIXELCORE;
 
 PixelCoreConsole::PixelCoreConsole(QObject *parent,
                                    QStringList args)
@@ -61,13 +63,13 @@ bool PixelCoreConsole::showProfiles()
     if (_args.contains("--icc") && _args.contains("show")) {
         QMap<QString, QString> profiles;
         if (_args.contains("rgb")) {
-            profiles = PIXELCORE::CMS::getColorProfiles();
+            profiles = CMS::getColorProfiles();
         } else if (_args.contains("cmyk")) {
-            profiles = PIXELCORE::CMS::getColorProfiles(cmsSigCmykData);
+            profiles = CMS::getColorProfiles(cmsSigCmykData);
         } else if (_args.contains("gray")) {
-            profiles = PIXELCORE::CMS::getColorProfiles(cmsSigGrayData);
+            profiles = CMS::getColorProfiles(cmsSigGrayData);
         } else {
-            profiles = PIXELCORE::CMS::getAllColorProfiles();
+            profiles = CMS::getAllColorProfiles();
         }
         if (profiles.size() > 0) {
             std::cout << std::endl;
@@ -108,7 +110,7 @@ bool PixelCoreConsole::extractEmbeddedProfile()
             !QFile::exists(input)) { return true; }
         if (!output.endsWith(".icc")) { output.append(".icc"); }
         QByteArray profile = PixelCoreUtils::getEmbeddedColorProfile(input);
-        if (!PIXELCORE::CMS::isValidColorProfile(profile)) { return true; }
+        if (!CMS::isValidColorProfile(profile)) { return true; }
         if (saveProfile(output, profile)) { return false; }
     }
     return true;
@@ -120,7 +122,7 @@ bool PixelCoreConsole::saveProfile(const QString &filename,
     bool saved = false;
     if (!filename.isEmpty() &&
         profile.size() > 0 &&
-        PIXELCORE::CMS::isValidColorProfile(profile))
+        CMS::isValidColorProfile(profile))
     {
         QFile file(filename);
         if (file.open(QIODevice::WriteOnly)) {

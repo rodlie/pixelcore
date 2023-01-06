@@ -69,7 +69,7 @@ include_directories(
 )
 
 set(PIXELCORE_HEADERS_CORE
-    core/pixelcorecms.h
+    core/cms.h
     core/pixelcoreconsole.h
     core/pixelcoreimage.h
     core/pixelcoreutils.h
@@ -77,7 +77,7 @@ set(PIXELCORE_HEADERS_CORE
 )
 
 set(PIXELCORE_SOURCES_CORE
-    core/pixelcorecms.cpp
+    core/cms.cpp
     core/pixelcoreconsole.cpp
     core/pixelcoreimage.cpp
     core/pixelcoreutils.cpp
