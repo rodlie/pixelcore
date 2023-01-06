@@ -1,11 +1,11 @@
 /*
 #
-# PixelCore
+# PIXELCORE
 #
 # https://pixelcore.org
 # https://github.com/rodlie/pixelcore
 #
-# Copyright (c) 2021, 2022 Ole-André Rodlie. All rights reserved.
+# Copyright (c) Ole-André Rodlie. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,6 +19,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+# The copyright holders of PIXELCORE hereby grant permission for
+# non-GPL compatible plug-ins and add-ons to be used and distributed
+# together with PIXELCORE, provided that you also meet the terms and conditions
+# of the licenses of those plug-ins and add-ons.
 #
 */
 
